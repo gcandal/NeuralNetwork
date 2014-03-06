@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class Neuron {
 	private static int count = 0;
-	private double output = 0;
+	private double output = 0, error = 0;
 	private final int id;
 
 	private HashMap<Integer, Synapse> incomingSynapses = new HashMap<Integer, Synapse>();
@@ -29,7 +29,7 @@ public class Neuron {
 
 		return result.toString();
 	}
-
+	//TODO varios erros para varios outputs?	
 	public void calculateOutput() {
 		double sum = 0;
 		for (Synapse synapse : incomingSynapses.values()) {
@@ -42,11 +42,19 @@ public class Neuron {
 		return 1 / (1 + Math.pow(Math.E, -sum));
 	}
 
-	private double getOutput() {
+	public double getOutput() {
 		return output;
 	}
 
 	public void setOutput(Double newOutput) {
 		output = newOutput;
+	}
+	
+	public void setError(double expected) {
+		error = expected - output;
+	}
+	
+	public double getError(double expected) {
+		return error;
 	}
 }

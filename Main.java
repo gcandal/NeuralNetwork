@@ -8,6 +8,7 @@ public class Main {
 	@SuppressWarnings({ "unused", "serial" })
 	public static void main(String[] args) {
 		Parser parser = null;
+		NeuralNetwork network;
 		int nOutputs = 2;
 		
 		try {
@@ -18,7 +19,7 @@ public class Main {
 			return;
 		}
 		ArrayList<ArrayList<Double>> inputs = null;
-
+		//TODO normalizar temperatura?
 		try {
 			inputs = parser.parseFile();
 		} catch (IOException e) {
@@ -27,9 +28,8 @@ public class Main {
 			return;
 		}
 
-		//for (ArrayList<Double> inputSet : inputs)
-			//System.out.println(inputSet);
-
-		System.out.println(new NeuralNetwork(new ArrayList<Integer>() {{ add(1); add(2); add(2); add(3); }}));
+		network = new NeuralNetwork(new ArrayList<Integer>() {{ add(1); add(2); add(1); }}, 0.25);
+		network.feedForward(new ArrayList<Double>() {{ add(1.0); }});
+		System.out.println(network.getOutput());
 	}
 }

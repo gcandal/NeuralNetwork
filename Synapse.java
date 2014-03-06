@@ -41,4 +41,8 @@ public class Synapse {
 	public Integer getId() {
 		return id;
 	}
+	
+	public void changeWeight(double error, double learningRate) {
+		weight += learningRate * error * from.getOutput() * to.getOutput() * (1 - to.getOutput()); 
+	}
 }
