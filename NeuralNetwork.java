@@ -3,44 +3,75 @@ package neuralNetwork;
 import java.util.ArrayList;
 
 public class NeuralNetwork {
-	private ArrayList<Neuron> inputLayer, hiddenLayer, outputLayer;
 	
-	//TODO quando estiver tudo feito -> multipla camada hidden
-	public NeuralNetwork(int nrInputNeurons, int nrHiddenNeurons, int nrOutputNeurons) {
-		inputLayer = initializeLayer(nrInputNeurons);
-		hiddenLayer = initializeLayer(nrHiddenNeurons);
-		outputLayer = initializeLayer(nrOutputNeurons);
+	private ArrayList<ArrayList<Neuron>> layers;
+
+	public NeuralNetwork(ArrayList<Integer> layerNumbers) {
+		layers = new ArrayList<ArrayList<Neuron>>(layerNumbers.size());
 		
-		connectLayers(inputLayer, hiddenLayer);
-		connectLayers(hiddenLayer, outputLayer);
+		for (int i = 0; i < layerNumbers.size(); i++) {
+			initializeLayer(layerNumbers.get(i), i);
+		}
 	}
-	
-	private ArrayList<Neuron> initializeLayer(int layerSize) {
+
+	private void initializeLayer(int layerSize, int index) {
 		ArrayList<Neuron> layer = new ArrayList<Neuron>(layerSize);
-		
-		for(int i = 0; i < layerSize; i++)
+
+		for (int i = 0; i < layerSize; i++)
 			layer.add(new Neuron());
 		
-		return layer;
+		layers.add(index, layer);
+		if(index != 0) 
+			connectLayers(index);
+			
 	}
-	
-	private void connectLayers(ArrayList<Neuron> fromLayer, ArrayList<Neuron> toLayer) {
-		for(Neuron fromNeuron: fromLayer)
-			for(Neuron toNeuron: toLayer)
+
+	private void connectLayers(int index) {
+		for (Neuron fromNeuron : layers.get(index - 1))
+			for (Neuron toNeuron : layers.get(index))
 				toNeuron.addIncomingSynapse(new Synapse(fromNeuron, toNeuron));
 	}
-	
+
 	public String toString() {
-		return "Input Neuron ==>> Hidden Neuron \n" + layerToString(hiddenLayer) +
-				"\nHidden Neuron ==>> Output Neuron \n" + layerToString(outputLayer);
+		return "Input Neuron ==>> Hidden Neuron"
+				+ hiddenLayerstoString()
+				+ "Hidden Neuron ==>> Output Neuron\n"
+				+ layerToString(layers.get(layers.size()-1));
 	}
 	
-	private String layerToString(ArrayList<Neuron> layer) {
+	private String hiddenLayerstoString() {
 		StringBuilder result = new StringBuilder();
 		
-		for(Neuron neuron: layer)
-			result.append(neuron);
+		for(ArrayList<Neuron> layer: layers.subList(0, layers.size() - 1))
+			result.append(layerToString(layer)).append("\n");
 		
 		return result.toString();
+	}
+
+	private String layerToString(ArrayList<Neuron> layer) {
+		StringBuilder result = new StringBuilder();
+
+		for (Neuron neuron : layer)
+			result.append(neuron);
+
+		return result.toString();
+	}
+
+	public void feedForward(ArrayList<Double> input) {
+		if(input.size() != layers.get(0).size()) 
+			throw new RuntimeException("Invalid Input Size");
+		
+		initializeInputLayer(input);
+		for(ArrayList<Neuron> layer: layers.subList(1, layers.size())){
+			for(Neuron neuron: layer){
+				neuron.calculateOutput();
+			}
+		}
+	}
+
+	private void initializeInputLayer(ArrayList<Double> input) {
+		for(int i = 0; i < layers.get(0).size(); i++) {
+			layers.get(0).get(i).setOutput(input.get(i)); 
+		}
 	}
 }
