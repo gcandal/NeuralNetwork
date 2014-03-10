@@ -10,7 +10,7 @@ public class Main {
 		Parser parser = null;
 		NeuralNetwork network;
 		int nOutputs = 2;
-		
+
 		try {
 			parser = new Parser("diagnosis.txt");
 		} catch (FileNotFoundException e) {
@@ -19,7 +19,7 @@ public class Main {
 			return;
 		}
 		ArrayList<ArrayList<Double>> inputs = null;
-		//TODO normalizar temperatura?
+		// TODO normalizar temperatura?
 		try {
 			inputs = parser.parseFile();
 		} catch (IOException e) {
@@ -28,8 +28,18 @@ public class Main {
 			return;
 		}
 
-		network = new NeuralNetwork(new ArrayList<Integer>() {{ add(1); add(2); add(1); }}, 0.25);
-		network.feedForward(new ArrayList<Double>() {{ add(1.0); }});
+		network = new NeuralNetwork(new ArrayList<Integer>() {
+			{
+				add(1);
+				add(2);
+				add(1);
+			}
+		}, 0.25);
+		network.feedForward(new ArrayList<Double>() {
+			{
+				add(1.0);
+			}
+		});
 		System.out.println(network.getOutput());
 	}
 }

@@ -75,8 +75,13 @@ public class NeuralNetwork {
 			throw new RuntimeException("Invalid Output Size");
 
 		calculateErrors(output);
-		
-		//TODO add recursive backprop
+
+		for (int i = layers.size() - 1; i > 1; i--) {
+			for (Neuron neuron : layers.get(i)) {
+				neuron.changeWeightSynapses(learningRate);
+				neuron.calculateError();
+			}
+		}
 	}
 
 	private void initializeInputLayer(ArrayList<Double> input) {
@@ -84,9 +89,9 @@ public class NeuralNetwork {
 			layers.get(0).get(i).setOutput(input.get(i));
 		}
 	}
-	
+
 	private void calculateErrors(ArrayList<Double> expectedOutput) {
-		for (int i = 0; i < layers.get(layers.size()-1).size(); i++) {
+		for (int i = 0; i < layers.get(layers.size() - 1).size(); i++) {
 			layers.get(0).get(i).setError(expectedOutput.get(i));
 		}
 	}

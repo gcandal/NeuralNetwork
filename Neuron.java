@@ -29,7 +29,8 @@ public class Neuron {
 
 		return result.toString();
 	}
-	//TODO varios erros para varios outputs?	
+
+	// TODO varios erros para varios outputs?
 	public void calculateOutput() {
 		double sum = 0;
 		for (Synapse synapse : incomingSynapses.values()) {
@@ -49,12 +50,27 @@ public class Neuron {
 	public void setOutput(Double newOutput) {
 		output = newOutput;
 	}
-	
+
 	public void setError(double expected) {
 		error = expected - output;
 	}
-	
+
 	public double getError(double expected) {
 		return error;
+	}
+
+	public void changeWeightSynapses(double learningRate) {
+		for (Synapse synapse : incomingSynapses.values()) {
+			synapse.changeWeight(error, learningRate);
+		}
+
+	}
+
+	public void calculateError() {
+		double sum = 0;
+		for (Synapse synapse : incomingSynapses.values()) {
+			sum += synapse.getWeight() * synapse.getToNeuron().getOutput();
+		}
+		error = sum * output * (1 - output);
 	}
 }

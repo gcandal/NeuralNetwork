@@ -26,6 +26,10 @@ public class Synapse {
 		return from;
 	}
 
+	public Neuron getToNeuron() {
+		return to;
+	}
+	
 	public double getWeight() {
 		return weight;
 	}
@@ -41,8 +45,9 @@ public class Synapse {
 	public Integer getId() {
 		return id;
 	}
-	
+
 	public void changeWeight(double error, double learningRate) {
-		weight += learningRate * error * from.getOutput() * to.getOutput() * (1 - to.getOutput()); 
+		weight += learningRate * error * from.getOutput() * to.getOutput()
+				* (1 - to.getOutput());
 	}
 }

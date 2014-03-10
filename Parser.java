@@ -20,7 +20,7 @@ public class Parser {
 		while (true) {
 			line = file.readLine();
 
-			if (line == null || line.isEmpty())	
+			if (line == null || line.isEmpty())
 				return result;
 
 			result.add(parseLine(line));
