@@ -12,14 +12,14 @@ public class Main {
 		int nOutputs = 2;
 
 		try {
-			parser = new Parser("diagnosis.txt");
+			parser = new Parser("diagnosis.txt", 34, 43);
 		} catch (FileNotFoundException e) {
 			System.out.println("Couldn't open file");
 
 			return;
 		}
 		ArrayList<ArrayList<Double>> inputs = null;
-		// TODO normalizar temperatura?
+		
 		try {
 			inputs = parser.parseFile();
 		} catch (IOException e) {
@@ -27,7 +27,9 @@ public class Main {
 
 			return;
 		}
-
+		
+		//System.out.println(inputs);
+		
 		network = new NeuralNetwork(new ArrayList<Integer>() {
 			{
 				add(1);

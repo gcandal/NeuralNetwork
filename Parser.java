@@ -6,11 +6,24 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.management.RuntimeErrorException;
+
 public class Parser {
 	private BufferedReader file;
+	private int lowerBound = 0, upperBound = 0;
 
 	public Parser(String filename) throws FileNotFoundException {
 		file = new BufferedReader(new FileReader(filename));
+	}
+	
+	public Parser(String filename, int newLowerBound, int newUpperBound) throws FileNotFoundException {
+		file = new BufferedReader(new FileReader(filename));
+		
+		if(newUpperBound < newLowerBound)
+			throw new RuntimeErrorException(null, "Lower bound must be less than the upper bound");
+			
+		lowerBound = newLowerBound;
+		upperBound = newUpperBound;
 	}
 
 	public ArrayList<ArrayList<Double>> parseFile() throws IOException {
@@ -32,7 +45,12 @@ public class Parser {
 
 		for (String word : line.split("\t"))
 			try {
-				result.add(Double.parseDouble(word.replace(",", ".")));
+				Double num = Double.parseDouble(word.replace(",", "."));
+				
+				if(lowerBound == 0 && upperBound == 0)
+					result.add(num);
+				else
+					result.add(normalizeNumber(num));
 			} catch (NumberFormatException e) {
 				if (word.equals("yes"))
 					result.add(1.0);
@@ -41,5 +59,10 @@ public class Parser {
 			}
 
 		return result;
+	}
+	
+	private Double normalizeNumber(Double number) {
+		
+		return ( number - lowerBound ) / ( ( upperBound - lowerBound ) * 0.5 ) - 1;
 	}
 }
