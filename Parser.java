@@ -55,14 +55,13 @@ public class Parser {
 				if (word.equals("yes"))
 					result.add(1.0);
 				else
-					result.add(0.0);
+					result.add(-1.0);
 			}
 
 		return result;
 	}
 	
 	private Double normalizeNumber(Double number) {
-		
 		return ( number - lowerBound ) / ( ( upperBound - lowerBound ) * 0.5 ) - 1;
 	}
 }
