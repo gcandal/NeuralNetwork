@@ -85,7 +85,7 @@ public class NeuralNetwork {
 
 		for (int i = layers.size() - 1; i > 1; i--) {
 			for (Neuron neuron : layers.get(i)) {
-				neuron.changeWeightSynapses(learningRate);
+				neuron.changeWeightSynapses(learningRate, momentum);
 				neuron.calculateError();
 			}
 		}

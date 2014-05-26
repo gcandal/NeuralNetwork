@@ -77,24 +77,22 @@ public class Main {
 		} catch(IOException e) {
 			System.out.println("There was a problem writting the .csv file");
 			e.printStackTrace();
-
-			return;
 		}
 	}
 
 	@SuppressWarnings("unused")
 	private static void mergeOutputs(String infile, String outfile, boolean justOne) throws IOException {
-		BufferedReader ifile = new BufferedReader(new FileReader(infile));
-		BufferedWriter ofile = new BufferedWriter(new FileWriter(outfile));
-		String line = "";
+		BufferedReader iFile = new BufferedReader(new FileReader(infile));
+		BufferedWriter oFile = new BufferedWriter(new FileWriter(outfile));
+		String line;
 		String[] split;
 
 		while (true) {
-			line = ifile.readLine();
+			line = iFile.readLine();
 
 			if (line == null || line.isEmpty()) {
-				ifile.close();
-				ofile.close();
+				iFile.close();
+				oFile.close();
 				return;
 			}
 
@@ -102,29 +100,29 @@ public class Main {
 
 			for(int i = 0; i < split.length-2; i++)
 				if(i==0)
-					ofile.write(split[i].replace(',', '.')+",");
+					oFile.write(split[i].replace(',', '.')+",");
 				else
-					ofile.write(split[i]+",");
+					oFile.write(split[i]+",");
 
 			if(!justOne) {
 				if(split[split.length-2].equals("yes")) {
 					if(split[split.length-1].equals("yes"))
-						ofile.write("ambas");
+						oFile.write("ambas");
 					else
-						ofile.write("primeira");
+						oFile.write("primeira");
 				} else if(split[split.length-1].equals("yes"))
-					ofile.write("segunda");
-				else ofile.write("nenhuma");
+					oFile.write("segunda");
+				else oFile.write("nenhuma");
 			} else if(split[split.length-2].equals("yes"))
-				ofile.write("yes");
-			else ofile.write("no");
+				oFile.write("yes");
+			else oFile.write("no");
 
 
-			ofile.write('\n');
+			oFile.write('\n');
 		}
 	}
 
-	public static void encodeForNeuralNetowrk(ArrayList< ArrayList<Double> > inputs, int numberOfTrainingRows) {
+	public static void encodeForNeuralNetwork(ArrayList<ArrayList<Double>> inputs, int numberOfTrainingRows) {
 		test = new ArrayList< ArrayList<Double> > (inputs.size() - numberOfTrainingRows);
 		train = new ArrayList< ArrayList<Double> > (numberOfTrainingRows);
 		
@@ -200,7 +198,7 @@ public class Main {
 		}
 
 		Collections.shuffle(inputs);
-		encodeForNeuralNetowrk(inputs, 80);
+		encodeForNeuralNetwork(inputs, 80);
 
 		/*
 		exportToCSV(80, inputs, "train.txt", "test.txt");

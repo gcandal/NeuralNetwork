@@ -28,7 +28,7 @@ public class Parser {
 
 	public ArrayList<ArrayList<Double>> parseFile() throws IOException {
 		ArrayList<ArrayList<Double>> result = new ArrayList<ArrayList<Double>>();
-		String line = "";
+		String line;
 
 		while (true) {
 			line = file.readLine();
