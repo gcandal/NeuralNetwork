@@ -7,7 +7,7 @@ public class NeuralNetwork {
 	private ArrayList<ArrayList<Neuron>> layers;
 	private double learningRate = 0.25;
 
-	public NeuralNetwork(ArrayList<Integer> layerNumbers, double newLearningRate) {
+	public NeuralNetwork(ArrayList<Integer> layerNumbers, double newLearningRate, double momentum) {
 		learningRate = newLearningRate;
 		layers = new ArrayList<ArrayList<Neuron>>(layerNumbers.size());
 
@@ -35,12 +35,12 @@ public class NeuralNetwork {
 	}
 
 	public String toString() {
-		return "Input Neuron ==>> Hidden Neuron" + hiddenLayerstoString()
+		return "Input Neuron ==>> Hidden Neuron" + hiddenLayersToString()
 				+ "Hidden Neuron ==>> Output Neuron\n"
 				+ layerToString(layers.get(layers.size() - 1));
 	}
 
-	private String hiddenLayerstoString() {
+	private String hiddenLayersToString() {
 		StringBuilder result = new StringBuilder();
 
 		for (ArrayList<Neuron> layer : layers.subList(0, layers.size() - 1))

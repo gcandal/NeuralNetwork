@@ -177,7 +177,7 @@ public class Main {
 
 	@SuppressWarnings({ "unused", "serial" })
 	public static void main(String[] args) {
-		Parser parser = null;
+		Parser parser;
 		NeuralNetwork network;
 		int nOutputs = 2;
 
@@ -189,7 +189,7 @@ public class Main {
 			return;
 		}
 
-		ArrayList<ArrayList<Double>> inputs = null;
+		ArrayList<ArrayList<Double>> inputs;
 
 		try {
 			inputs = parser.parseFile();
@@ -211,14 +211,14 @@ public class Main {
 		}
 		 */
 
-
 		network = new NeuralNetwork(new ArrayList<Integer>() {
 			{
-				add(1);
-				add(2);
-				add(1);
+				add(6);
+				add(5);
+				add(4);
 			}
-		}, 0.25);
+		}, 0.2, 0.3);
+
 		network.feedForward(new ArrayList<Double>() {
 			{
 				add(1.0);
