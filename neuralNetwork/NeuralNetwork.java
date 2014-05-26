@@ -5,10 +5,13 @@ import java.util.ArrayList;
 public class NeuralNetwork {
 
 	private ArrayList<ArrayList<Neuron>> layers;
-	private double learningRate = 0.25;
+	private double learningRate = 0.2;
+    private double momentum = 0.3;
 
-	public NeuralNetwork(ArrayList<Integer> layerNumbers, double newLearningRate, double momentum) {
+	public NeuralNetwork(ArrayList<Integer> layerNumbers, double newLearningRate, double newMomentum) {
 		learningRate = newLearningRate;
+        momentum = newMomentum;
+
 		layers = new ArrayList<ArrayList<Neuron>>(layerNumbers.size());
 
 		for (int i = 0; i < layerNumbers.size(); i++) {
@@ -19,8 +22,12 @@ public class NeuralNetwork {
 	private void initializeLayer(int layerSize, int index) {
 		ArrayList<Neuron> layer = new ArrayList<Neuron>(layerSize);
 
-		for (int i = 0; i < layerSize; i++)
-			layer.add(new Neuron());
+		for (int i = 0; i < layerSize; i++) {
+            if(index != 0)
+                layer.add(new Neuron(false));
+            else
+                layer.add(new Neuron(true));
+        }
 
 		layers.add(index, layer);
 		if (index != 0)

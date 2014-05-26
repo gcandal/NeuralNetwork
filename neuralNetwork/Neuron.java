@@ -9,8 +9,17 @@ public class Neuron {
 
 	private HashMap<Integer, Synapse> incomingSynapses = new HashMap<Integer, Synapse>();
 
-	public Neuron() {
+    public Neuron() {
+        id = count++;
+    }
+	public Neuron(boolean isFirstLayer) {
 		id = count++;
+        if(!isFirstLayer){
+            Neuron n = new Neuron();
+            n.setOutput(1.0);
+            this.addIncomingSynapse(new Synapse(n, this));
+        }
+
 	}
 
 	public void addIncomingSynapse(Synapse synapse) {
