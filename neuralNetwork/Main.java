@@ -1,31 +1,27 @@
 package neuralNetwork;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class Main {
 
-	private static ArrayList< ArrayList<Double> > test, train;
+    private static ArrayList<ArrayList<Double>> test, train;
 
-	@SuppressWarnings("unused")
-	private static void exportToCSV(int numberOfTrainingRows, ArrayList<ArrayList<Double>> inputs, String trainFilename, String testFilename) {
-		try {
-			BufferedWriter file = new BufferedWriter(new FileWriter(trainFilename));
+    @SuppressWarnings("unused")
+    private static void exportToCSV(int numberOfTrainingRows, ArrayList<ArrayList<Double>> inputs,
+                                    String trainFilename, String testFilename) {
+        try {
+            BufferedWriter file = new BufferedWriter(new FileWriter(trainFilename));
 
-			int i = 0;
-			boolean writtingTest = false;
+            int i = 0;
+            boolean writtingTest = false;
 
-			for(ArrayList<Double> line: inputs) {
-				for(int b = 0; b < line.size() - 2; b++)
-					file.write(line.get(b)+",");
-				/*
-					if(b == 0)
+            for (ArrayList<Double> line : inputs) {
+                for (int b = 0; b < line.size() - 2; b++)
+                    file.write(line.get(b) + ",");
+                /*
+                    if(b == 0)
 						file.write(line.get(b)+",");
 					else if(line.get(b) == 1)
 						file.write("1,-1,");
@@ -34,7 +30,7 @@ public class Main {
 				 */
 
 				/*
-				if(line.get(line.size()-2) == -1)
+                if(line.get(line.size()-2) == -1)
 					file.write("1,-1,");
 				else file.write("-1,1,");
 
@@ -54,175 +50,160 @@ public class Main {
 				else file.write("-1");
 				 */
 
-				if(line.get(line.size()-1) == 1) {
-					if(line.get(line.size()-2) == 1)
-						file.write("1,0,0,0");
-					else
-						file.write("0,1,0,0");
-				} else if(line.get(line.size()-2) == 1)
-					file.write("0,0,1,0");
-				else file.write("0,0,0,1");
+                if (line.get(line.size() - 1) == 1) {
+                    if (line.get(line.size() - 2) == 1) file.write("1,0,0,0");
+                    else file.write("0,1,0,0");
+                } else if (line.get(line.size() - 2) == 1) file.write("0,0,1,0");
+                else file.write("0,0,0,1");
 
-				file.write('\n');
+                file.write('\n');
 
-				if(!writtingTest && ++i >= numberOfTrainingRows && !testFilename.equals("")) {
-					file.close();
+                if (!writtingTest && ++i >= numberOfTrainingRows && !testFilename.equals("")) {
+                    file.close();
 
-					file = new BufferedWriter(new FileWriter(testFilename));
-					writtingTest = true;
-				}
-			}
+                    file = new BufferedWriter(new FileWriter(testFilename));
+                    writtingTest = true;
+                }
+            }
 
-			file.close();
-		} catch(IOException e) {
-			System.out.println("There was a problem writting the .csv file");
-			e.printStackTrace();
-		}
-	}
+            file.close();
+        } catch (IOException e) {
+            System.out.println("There was a problem writting the .csv file");
+            e.printStackTrace();
+        }
+    }
 
-	@SuppressWarnings("unused")
-	private static void mergeOutputs(String infile, String outfile, boolean justOne) throws IOException {
-		BufferedReader iFile = new BufferedReader(new FileReader(infile));
-		BufferedWriter oFile = new BufferedWriter(new FileWriter(outfile));
-		String line;
-		String[] split;
+    @SuppressWarnings("unused")
+    private static void mergeOutputs(String infile, String outfile, boolean justOne) throws IOException {
+        BufferedReader iFile = new BufferedReader(new FileReader(infile));
+        BufferedWriter oFile = new BufferedWriter(new FileWriter(outfile));
+        String line;
+        String[] split;
 
-		while (true) {
-			line = iFile.readLine();
+        while (true) {
+            line = iFile.readLine();
 
-			if (line == null || line.isEmpty()) {
-				iFile.close();
-				oFile.close();
-				return;
-			}
+            if (line == null || line.isEmpty()) {
+                iFile.close();
+                oFile.close();
+                return;
+            }
 
-			split = line.split("\t");
+            split = line.split("\t");
 
-			for(int i = 0; i < split.length-2; i++)
-				if(i==0)
-					oFile.write(split[i].replace(',', '.')+",");
-				else
-					oFile.write(split[i]+",");
+            for (int i = 0; i < split.length - 2; i++)
+                if (i == 0) oFile.write(split[i].replace(',', '.') + ",");
+                else oFile.write(split[i] + ",");
 
-			if(!justOne) {
-				if(split[split.length-2].equals("yes")) {
-					if(split[split.length-1].equals("yes"))
-						oFile.write("ambas");
-					else
-						oFile.write("primeira");
-				} else if(split[split.length-1].equals("yes"))
-					oFile.write("segunda");
-				else oFile.write("nenhuma");
-			} else if(split[split.length-2].equals("yes"))
-				oFile.write("yes");
-			else oFile.write("no");
+            if (!justOne) {
+                if (split[split.length - 2].equals("yes")) {
+                    if (split[split.length - 1].equals("yes")) oFile.write("ambas");
+                    else oFile.write("primeira");
+                } else if (split[split.length - 1].equals("yes")) oFile.write("segunda");
+                else oFile.write("nenhuma");
+            } else if (split[split.length - 2].equals("yes")) oFile.write("yes");
+            else oFile.write("no");
 
 
-			oFile.write('\n');
-		}
-	}
+            oFile.write('\n');
+        }
+    }
 
-	public static void encodeForNeuralNetwork(ArrayList<ArrayList<Double>> inputs, int numberOfTrainingRows) {
-		test = new ArrayList< ArrayList<Double> > (inputs.size() - numberOfTrainingRows);
-		train = new ArrayList< ArrayList<Double> > (numberOfTrainingRows);
-		
-		ArrayList<Double> currentLine = new ArrayList<Double>(inputs.get(0).size());
-		boolean writtingTest = false;
-		int i = 0;
+    public static void encodeForNeuralNetwork(ArrayList<ArrayList<Double>> inputs, int numberOfTrainingRows) {
+        test = new ArrayList<ArrayList<Double>>(inputs.size() - numberOfTrainingRows);
+        train = new ArrayList<ArrayList<Double>>(numberOfTrainingRows);
 
-		for(ArrayList<Double> line: inputs) {
-			for(int b = 0; b < line.size() - 2; b++)
-				currentLine.add(line.get(b));
+        ArrayList<Double> currentLine = new ArrayList<Double>(inputs.get(0).size());
+        boolean writtingTest = false;
+        int i = 0;
 
-			if(line.get(line.size()-1) == 1) {
-				if(line.get(line.size()-2) == 1) {
-					currentLine.add(1.0);
-					currentLine.add(0.0);
-					currentLine.add(0.0);
-					currentLine.add(0.0);
-				}
-				else {
-					currentLine.add(0.0);
-					currentLine.add(1.0);
-					currentLine.add(0.0);
-					currentLine.add(0.0);
-				}
-			} else if(line.get(line.size()-2) == 1) {
-				currentLine.add(0.0);
-				currentLine.add(0.0);
-				currentLine.add(1.0);
-				currentLine.add(0.0);
-			}
-			else {
-				currentLine.add(0.0);
-				currentLine.add(0.0);
-				currentLine.add(0.0);
-				currentLine.add(1.0);
-			}
+        for (ArrayList<Double> line : inputs) {
+            for (int b = 0; b < line.size() - 2; b++)
+                currentLine.add(line.get(b));
 
-			if(writtingTest)
-				test.add(currentLine);
-			else
-				train.add(currentLine);
+            if (line.get(line.size() - 1) == 1) {
+                if (line.get(line.size() - 2) == 1) {
+                    currentLine.add(1.0);
+                    currentLine.add(0.0);
+                    currentLine.add(0.0);
+                    currentLine.add(0.0);
+                } else {
+                    currentLine.add(0.0);
+                    currentLine.add(1.0);
+                    currentLine.add(0.0);
+                    currentLine.add(0.0);
+                }
+            } else if (line.get(line.size() - 2) == 1) {
+                currentLine.add(0.0);
+                currentLine.add(0.0);
+                currentLine.add(1.0);
+                currentLine.add(0.0);
+            } else {
+                currentLine.add(0.0);
+                currentLine.add(0.0);
+                currentLine.add(0.0);
+                currentLine.add(1.0);
+            }
 
-			if(++i >= numberOfTrainingRows) 
-				writtingTest = true;
+            if (writtingTest) test.add(currentLine);
+            else train.add(currentLine);
 
-			currentLine = new ArrayList<Double>(inputs.get(0).size());
-		}
+            if (++i >= numberOfTrainingRows) writtingTest = true;
 
-	}
+            currentLine = new ArrayList<Double>(inputs.get(0).size());
+        }
 
-	@SuppressWarnings({ "unused", "serial" })
-	public static void main(String[] args) {
-		Parser parser;
-		NeuralNetwork network;
-		int nOutputs = 2;
+    }
 
-		try {
-			parser = new Parser("diagnosis.txt", 35, 42);
-		} catch (FileNotFoundException e) {
-			System.out.println("Couldn't open file");
+    @SuppressWarnings({"unused", "serial"})
+    public static void main(String[] args) {
+        Parser parser;
+        NeuralNetwork network;
+        int nOutputs = 4;
 
-			return;
-		}
+        try {
+            parser = new Parser("diagnosis.txt", 35, 42);
+        } catch (FileNotFoundException e) {
+            System.out.println("Couldn't open file");
+            return;
+        }
 
-		ArrayList<ArrayList<Double>> inputs;
+        ArrayList<ArrayList<Double>> inputs;
 
-		try {
-			inputs = parser.parseFile();
-		} catch (IOException e) {
-			System.out.println("There was a problem reading the file");
+        try {
+            inputs = parser.parseFile();
+        } catch (IOException e) {
+            System.out.println("There was a problem reading the file");
+            return;
+        }
 
-			return;
-		}
+        Collections.shuffle(inputs);
+        encodeForNeuralNetwork(inputs, 80);
 
-		Collections.shuffle(inputs);
-		encodeForNeuralNetwork(inputs, 80);
+        exportToCSV(80, inputs, "train.txt", "test.txt");
+        try {
+            mergeOutputs("diagnosis.txt", "merged.txt", false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-		/*
-		exportToCSV(80, inputs, "train.txt", "test.txt");
-		try {
-			mergeOutputs("diagnosis.txt", "merged.txt", false);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		 */
+        network = new NeuralNetwork(new ArrayList<Integer>() {
+            {
+                //layers and number of perceptrons in each layer
+                add(6);
+                add(5);
+                add(4);
+            }
+        }, 0.2 /*learning rate*/, 0.3 /*momentum*/);
 
-		network = new NeuralNetwork(new ArrayList<Integer>() {
-			{
-				add(6);
-				add(5);
-				add(4);
-			}
-		}, 0.2, 0.3);
+        System.out.println();
 
-		network.feedForward(new ArrayList<Double>() {
-			{
-				add(1.0);
-			}
-		});
+        for (ArrayList<Double> inputLine : train) {
+            network.feedForward(new ArrayList<Double>(inputLine.subList(0,6)));
+            network.backPropagate(new ArrayList<Double>(inputLine.subList(6, inputLine.size())));
+        }
 
-		System.out.println(network.getOutput());
-	}
+
+        System.out.println(network.getOutput());
+    }
 }
