@@ -8,8 +8,71 @@ public class Main {
 
     private static ArrayList<ArrayList<Double>> test, train;
     private static double error = 0.0000001;
+    private static double learningRate;
+    private static String pathToDataset;
+    private static ArrayList<Integer> layerData;
 
-    @SuppressWarnings("unused")
+
+    @SuppressWarnings({"unused", "serial"})
+    public static void main(String[] args) {
+        Parser parser;
+        NeuralNetwork network;
+        Cli cli = new Cli();
+
+        //C:\Users\Vinnie\Projetos\NeuralNetwork\diagnosis.txt
+        pathToDataset = cli.askForDataset();
+        learningRate = cli.askForLearningRate();
+        layerData = cli.askForLayers();
+
+        int nOutputs = 4;
+
+        try {
+            parser = new Parser(pathToDataset, 35, 42);
+        } catch (FileNotFoundException e) {
+            System.out.println("Couldn't open file");
+            return;
+        }
+
+        ArrayList<ArrayList<Double>> inputs;
+
+        try {
+            inputs = parser.parseFile();
+        } catch (IOException e) {
+            System.out.println("There was a problem reading the file");
+            return;
+        }
+
+        Collections.shuffle(inputs);
+        encodeForNeuralNetwork(inputs, 80);
+
+        ArrayList<Integer> layers = new ArrayList<Integer>();
+        for (int i = 0; i < layerData.size(); i++){
+            layers.add(layerData.get(i));
+        }
+        network = new NeuralNetwork(layers, learningRate /*learning rate*/);
+
+        int i = 1;
+        double networkError = 0.0;
+
+        do {
+            for (ArrayList<Double> inputLine : train.subList(0, 80)) {
+                network.feedForward(new ArrayList<Double>(inputLine.subList(0, 6)));
+                network.backPropagate(new ArrayList<Double>(inputLine.subList(6, inputLine.size())));
+            }
+
+            networkError = network.getError();
+            i++;
+        } while (networkError > 0.001);
+        System.out.println();
+        System.out.println();
+        System.out.println("Treino terminado com FC= " + networkError + " após " + i + " iterações!");
+
+        double results = network.testNetwork(test);
+        networkError = network.getError();
+        System.out.println("Teste terminado com FC= " + networkError + " e percentagem de successo = " + results *
+                100 + "%!");
+    }
+
     private static void exportToCSV(int numberOfTrainingRows, ArrayList<ArrayList<Double>> inputs,
                                     String trainFilename, String testFilename) {
         try {
@@ -21,35 +84,6 @@ public class Main {
             for (ArrayList<Double> line : inputs) {
                 for (int b = 0; b < line.size() - 2; b++)
                     file.write(line.get(b) + ",");
-                /*
-                    if(b == 0)
-						file.write(line.get(b)+",");
-					else if(line.get(b) == 1)
-						file.write("1,-1,");
-					else
-						file.write("-1,1,");
-				 */
-
-				/*
-                if(line.get(line.size()-2) == -1)
-					file.write("1,-1,");
-				else file.write("-1,1,");
-
-				if(line.get(line.size()-1) == -1)
-					file.write("1,-1,");
-				else file.write("-1,1,");
-				 */
-
-				/*
-                if(line.get(line.size()-1) == 1) {
-					if(line.get(line.size()-2) == 1)
-						file.write("1");
-					else
-						file.write("-0.5");
-				} else if(line.get(line.size()-2) == 1)
-					file.write("0.5");
-				else file.write("-1");
-				 */
 
                 if (line.get(line.size() - 1) == 1) {
                     if (line.get(line.size() - 2) == 1) file.write("1,0,0,0");
@@ -74,7 +108,6 @@ public class Main {
         }
     }
 
-    @SuppressWarnings("unused")
     private static void mergeOutputs(String infile, String outfile, boolean justOne) throws IOException {
         BufferedReader iFile = new BufferedReader(new FileReader(infile));
         BufferedWriter oFile = new BufferedWriter(new FileWriter(outfile));
@@ -154,69 +187,5 @@ public class Main {
             currentLine = new ArrayList<Double>(inputs.get(0).size());
         }
 
-    }
-
-    @SuppressWarnings({"unused", "serial"})
-    public static void main(String[] args) {
-        Parser parser;
-        NeuralNetwork network;
-        int nOutputs = 4;
-
-        try {
-            parser = new Parser("diagnosis.txt", 35, 42);
-        } catch (FileNotFoundException e) {
-            System.out.println("Couldn't open file");
-            return;
-        }
-
-        ArrayList<ArrayList<Double>> inputs;
-
-        try {
-            inputs = parser.parseFile();
-        } catch (IOException e) {
-            System.out.println("There was a problem reading the file");
-            return;
-        }
-
-        Collections.shuffle(inputs);
-        encodeForNeuralNetwork(inputs, 80);
-
-        /*
-        exportToCSV(80, inputs, "train.txt", "test.txt");
-        try {
-            mergeOutputs("diagnosis.txt", "merged.txt", false);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        */
-
-        network = new NeuralNetwork(new ArrayList<Integer>() {
-            {
-                //layers and number of perceptrons in each layer
-                add(6);
-                add(5);
-                add(4);
-            }
-        }, 0.7 /*learning rate*/);
-
-        int i = 1;
-        double networkError = 0.0;
-
-        System.out.println("FC: "+network.getError());
-        do{
-            System.out.println("Iteracao: " + i);
-            i++;
-            for (ArrayList<Double> inputLine : train.subList(0, 80)) {
-                network.feedForward(new ArrayList<Double>(inputLine.subList(0, 6)));
-                network.backPropagate(new ArrayList<Double>(inputLine.subList(6, inputLine.size())));
-            }
-
-            networkError = network.getError();
-            System.out.println("FC: " + networkError);
-        } while (networkError>0.01);
-
-        network.testNetwork(test);
-        networkError = network.getError();
-        System.out.println("Test FC: " + networkError);
     }
 }
