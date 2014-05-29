@@ -63,7 +63,7 @@ public class Cli {
         } while (nLayers < 2);
 
         for (int i = 0; i < nLayers; i++) {
-            System.out.println("Insert the number of neurons for layers number " + (i + 1) + ": ");
+            System.out.println("Insert the number of neurons for layer number " + (i + 1) + ": ");
             try {
                 temp = in.nextInt();
             } catch (InputMismatchException e) {
@@ -81,72 +81,6 @@ public class Cli {
         return result;
     }
 
-    public void start() {
-        input = "";
-        clearConsole();
-
-
-        while (!input.equals("exit") && !input.equals("Exit") && !input.equals("6")) {
-
-            System.out.print("\nChoose a command:\n" + "1. Backup a File\n" + "2. Restore a File\n" + "3. Delete a " +
-                    "File\n" + "4. Reclaim disk space\n" + "5. Increase disk size\n" + "6. Exit\n\n" + "Option: ");
-            System.out.flush();
-            input = in.next();
-            clearConsole();
-            processInput();
-        }
-    }
-
-    private void clearConsole() {
-        try {
-            String os = System.getProperty("os.name");
-            if (os.contains("Windows")) {
-                Runtime.getRuntime().exec("cls");
-            } else {
-                Runtime.getRuntime().exec("clear");
-            }
-        } catch (Exception exception) {
-            // Handle exception.
-        }
-    }
-
-    private void processInput() {
-        input = "";
-        switch (input) {
-            case "1":
-            case "backup":
-            case "Backup":
-            case "BACKUP":
-                break;
-            case "2":
-            case "restore":
-            case "Restore":
-            case "RESTORE":
-                break;
-            case "3":
-            case "delete":
-            case "Delete":
-            case "DELETE":
-                break;
-            case "4":
-            case "reclaim":
-            case "Reclaim":
-            case "RECLAIM":
-                break;
-            case "5":
-            case "increase":
-            case "Increase":
-            case "INCREASE":
-                break;
-            case "6":
-            case "exit":
-            case "Exit":
-            case "EXIT":
-                break;
-            default:
-                System.out.println("Invalid Option!\n");
-        }
-    }
 
     public static boolean fileExists(String path) {
         File file = new File(path);
