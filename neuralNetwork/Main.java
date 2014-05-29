@@ -7,6 +7,7 @@ import java.util.Collections;
 public class Main {
 
     private static ArrayList<ArrayList<Double>> test, train;
+    private static double error = 0.0000001;
 
     @SuppressWarnings("unused")
     private static void exportToCSV(int numberOfTrainingRows, ArrayList<ArrayList<Double>> inputs,
@@ -40,7 +41,7 @@ public class Main {
 				 */
 
 				/*
-				if(line.get(line.size()-1) == 1) {
+                if(line.get(line.size()-1) == 1) {
 					if(line.get(line.size()-2) == 1)
 						file.write("1");
 					else
@@ -180,12 +181,14 @@ public class Main {
         Collections.shuffle(inputs);
         encodeForNeuralNetwork(inputs, 80);
 
+        /*
         exportToCSV(80, inputs, "train.txt", "test.txt");
         try {
             mergeOutputs("diagnosis.txt", "merged.txt", false);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        */
 
         network = new NeuralNetwork(new ArrayList<Integer>() {
             {
@@ -194,16 +197,26 @@ public class Main {
                 add(5);
                 add(4);
             }
-        }, 0.2 /*learning rate*/, 0.3 /*momentum*/);
+        }, 0.7 /*learning rate*/);
 
-        System.out.println();
+        int i = 1;
+        double networkError = 0.0;
 
-        for (ArrayList<Double> inputLine : train) {
-            network.feedForward(new ArrayList<Double>(inputLine.subList(0,6)));
-            network.backPropagate(new ArrayList<Double>(inputLine.subList(6, inputLine.size())));
-        }
+        System.out.println("FC: "+network.getError());
+        do{
+            System.out.println("Iteracao: " + i);
+            i++;
+            for (ArrayList<Double> inputLine : train.subList(0, 80)) {
+                network.feedForward(new ArrayList<Double>(inputLine.subList(0, 6)));
+                network.backPropagate(new ArrayList<Double>(inputLine.subList(6, inputLine.size())));
+            }
 
+            networkError = network.getError();
+            System.out.println("FC: " + networkError);
+        } while (networkError>0.01);
 
-        System.out.println(network.getOutput());
+        network.testNetwork(test);
+        networkError = network.getError();
+        System.out.println("Test FC: " + networkError);
     }
 }

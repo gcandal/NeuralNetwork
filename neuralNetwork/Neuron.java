@@ -8,23 +8,19 @@ public class Neuron {
 	private final int id;
 
 	private HashMap<Integer, Synapse> incomingSynapses = new HashMap<Integer, Synapse>();
+    private HashMap<Integer, Synapse> outgoingSynapses = new HashMap<Integer, Synapse>();
 
     public Neuron() {
         id = count++;
     }
-	public Neuron(boolean isFirstLayer) {
-		id = count++;
-        if(!isFirstLayer){
-            Neuron n = new Neuron();
-            n.setOutput(1.0);
-            this.addIncomingSynapse(new Synapse(n, this));
-        }
-
-	}
 
 	public void addIncomingSynapse(Synapse synapse) {
 		incomingSynapses.put(synapse.getId(), synapse);
 	}
+
+    public void addOutgoingSynapse(Synapse synapse) {
+        outgoingSynapses.put(synapse.getId(), synapse);
+    }
 
 	public int getId() {
 		return id;
@@ -34,12 +30,11 @@ public class Neuron {
 		StringBuilder result = new StringBuilder();
 
 		for (Synapse synapse : incomingSynapses.values())
-			result.append(synapse).append("\n");
+			result.append(synapse).append(" IN:" + incomingSynapses.size() + "|OUT: " + outgoingSynapses.size() + "\n");
 
 		return result.toString();
 	}
 
-	// TODO varios erros para varios outputs?
 	public void calculateOutput() {
 		double sum = 0;
 		for (Synapse synapse : incomingSynapses.values()) {
@@ -60,21 +55,24 @@ public class Neuron {
 		output = newOutput;
 	}
 
+    public double getError() {
+        return error;
+    }
+
 	public void setError(double expected) {
-		error = expected - output;
+		error = output * (1 - output) * (expected - output);
 	}
 
-	public void changeWeightSynapses(double learningRate, double momentum) {
+	public void changeWeightSynapses(double learningRate) {
 		for (Synapse synapse : incomingSynapses.values()) {
-			synapse.changeWeight(error, learningRate, momentum);
+			synapse.changeWeight(learningRate);
 		}
-
 	}
 
 	public void calculateError() {
 		double sum = 0;
-		for (Synapse synapse : incomingSynapses.values()) {
-			sum += synapse.getWeight() * synapse.getToNeuron().getOutput();
+		for (Synapse synapse : outgoingSynapses.values()) {
+			sum += synapse.getWeight() * synapse.getToNeuron().getError();
 		}
 		error = sum * output * (1 - output);
 	}

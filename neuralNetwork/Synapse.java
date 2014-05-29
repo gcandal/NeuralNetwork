@@ -51,26 +51,15 @@ public class Synapse {
     }
 
     public String toString() {
-        return from.getId() + " == " + weight + " >> " + to.getId();
+        return from.getId() + "(" + from.getOutput() + ")" + " == " + weight + " >> " + to.getId() + "(" + to.getOutput() + ")";
     }
 
     public Integer getId() {
         return id;
     }
 
-    public void changeWeight(double error, double learningRate, double momentum) {
-
-        double ak = this.getToNeuron().getOutput();
-        double ai = this.getFromNeuron().getOutput();
-        //TODO: get expected output and all is well.
-            /*double desiredOutput = expectedOutput[i];
-
-                double partialDerivative = -ak * (1 - ak) * ai
-                        * (desiredOutput - ak);
-                double deltaWeight = -learningRate * partialDerivative;
-                double newWeight = con.getWeight() + deltaWeight;
-                con.setDeltaWeight(deltaWeight);
-                con.setWeight(newWeight + momentum * con.getPrevDeltaWeight());*/
-        weight += learningRate * error * from.getOutput() * to.getOutput() * (1 - to.getOutput());
+    public void changeWeight(double learningRate) {
+        //System.out.println(from.getId() + "===>" + to.getId());
+        weight += learningRate * to.getError() * from.getOutput();
     }
 }
