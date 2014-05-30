@@ -1,6 +1,11 @@
 package neuralNetwork;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -9,13 +14,13 @@ class Main {
     private static ArrayList<ArrayList<Double>> test, train;
     private static NeuralNetwork network;
 
-    @SuppressWarnings({"unused", "serial"})
     public static void main(String[] args) {
         Parser parser;
         Cli cli = new Cli();
 
         String pathToDataset = cli.askForDataset();
         double learningRate = cli.askForLearningRate();
+        double momentum = cli.askForMomentum();
         ArrayList<Integer> layerData = cli.askForLayers();
         double desiredError = cli.askForDesiredError();
 
@@ -42,7 +47,7 @@ class Main {
         for (Integer aLayerData : layerData) {
             layers.add(aLayerData);
         }
-        network = new NeuralNetwork(layers, learningRate /*learning rate*/);
+        network = new NeuralNetwork(layers, learningRate, momentum);
 
         int i = 1;
         double networkError;
@@ -67,7 +72,8 @@ class Main {
         cli.whatNow();
     }
 
-    private static void exportToCSV(int numberOfTrainingRows, ArrayList<ArrayList<Double>> inputs,
+    @SuppressWarnings("unused")
+	private static void exportToCSV(int numberOfTrainingRows, ArrayList<ArrayList<Double>> inputs,
                                     String trainFilename, String testFilename) {
         try {
             BufferedWriter file = new BufferedWriter(new FileWriter(trainFilename));
@@ -102,7 +108,8 @@ class Main {
         }
     }
 
-    private static void mergeOutputs(String infile, String outfile, boolean justOne) throws IOException {
+    @SuppressWarnings("unused")
+	private static void mergeOutputs(String infile, String outfile, boolean justOne) throws IOException {
         BufferedReader iFile = new BufferedReader(new FileReader(infile));
         BufferedWriter oFile = new BufferedWriter(new FileWriter(outfile));
         String line;

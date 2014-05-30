@@ -43,6 +43,22 @@ class Cli {
             }
         } while (learningRate > 1.0 || learningRate <= 0.0); return learningRate;
     }
+    
+    public double askForMomentum() {
+        double momentum = 0;
+        do {
+            System.out.println("Insert the momentum rate (0 - 1.0): ");
+            try {
+            	momentum = in.nextDouble();
+            } catch(InputMismatchException e) {
+                System.out.println("Please insert a number");
+                in.nextLine();
+            }
+            if (momentum > 1.0 || momentum < 0.0) {
+                System.out.println("Momentum must be a double between 0 and 1!");
+            }
+        } while (momentum > 1.0 || momentum < 0.0); return momentum;
+    }
 
     public ArrayList<Integer> askForLayers() {
         int nLayers = 0;

@@ -6,7 +6,7 @@ class Synapse {
     private static final Random random = new Random();
     private static int count = 0;
     private final int id;
-    private double weight = 0;
+    private double weight = 0, previousChange = 0;
     private final Neuron from, to;
 
     public Synapse(Neuron in, Neuron out) {
@@ -46,8 +46,9 @@ class Synapse {
         return id;
     }
 
-    public void changeWeight(double learningRate) {
-        //System.out.println(from.getId() + "===>" + to.getId());
-        weight += learningRate * to.getError() * from.getOutput();
+    public void changeWeight(double learningRate, double momentum) {
+    	double newChange = learningRate * to.getError() * from.getOutput();
+        weight += newChange + momentum*previousChange;
+    	previousChange = newChange;
     }
 }

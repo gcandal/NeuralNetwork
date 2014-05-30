@@ -64,9 +64,9 @@ public class Neuron {
 		error = output * (1 - output) * (expected - output);
 	}
 
-	public void changeWeightSynapses(double learningRate) {
+	public void changeWeightSynapses(double learningRate, double momentum) {
 		for (Synapse synapse : incomingSynapses.values()) {
-			synapse.changeWeight(learningRate);
+			synapse.changeWeight(learningRate, momentum);
 		}
 	}
 

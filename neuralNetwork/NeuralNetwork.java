@@ -7,11 +7,12 @@ public class NeuralNetwork {
     private final ArrayList<ArrayList<Neuron>> layers;
     private final ArrayList<Double> squaredErrors = new ArrayList<>();
     private int exampleCount = 0;
-    private double learningRate = 0.2;
+    private double learningRate = 0.2, momentum = 0.3;
     private final Neuron bias = new Neuron();
 
-    public NeuralNetwork(ArrayList<Integer> layerNumbers, double newLearningRate) {
+    public NeuralNetwork(ArrayList<Integer> layerNumbers, double newLearningRate, double newMomentum) {
         learningRate = newLearningRate;
+        momentum = newMomentum;
         bias.setOutput(1.0);
 
         layers = new ArrayList<>(layerNumbers.size());
@@ -39,7 +40,7 @@ public class NeuralNetwork {
         for (int i = layers.size() - 1; i > 0; i--)
             for (Neuron neuron : layers.get(i)) {
                 if (i < layers.size() - 1) neuron.calculateError();
-                neuron.changeWeightSynapses(learningRate);
+                neuron.changeWeightSynapses(learningRate, momentum);
             }
 
         exampleCount++;
