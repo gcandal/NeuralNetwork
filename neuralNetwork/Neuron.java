@@ -7,8 +7,8 @@ public class Neuron {
 	private double output = 0, error = 0;
 	private final int id;
 
-	private HashMap<Integer, Synapse> incomingSynapses = new HashMap<Integer, Synapse>();
-    private HashMap<Integer, Synapse> outgoingSynapses = new HashMap<Integer, Synapse>();
+	private final HashMap<Integer, Synapse> incomingSynapses = new HashMap<>();
+    private final HashMap<Integer, Synapse> outgoingSynapses = new HashMap<>();
 
     public Neuron() {
         id = count++;
@@ -30,7 +30,8 @@ public class Neuron {
 		StringBuilder result = new StringBuilder();
 
 		for (Synapse synapse : incomingSynapses.values())
-			result.append(synapse).append(" IN:" + incomingSynapses.size() + "|OUT: " + outgoingSynapses.size() + "\n");
+			result.append(synapse).append(" IN:").append(incomingSynapses.size()).append("|OUT: ").append
+                    (outgoingSynapses.size()).append("\n");
 
 		return result.toString();
 	}

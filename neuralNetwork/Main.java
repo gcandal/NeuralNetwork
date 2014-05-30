@@ -4,27 +4,20 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class Main {
+class Main {
 
     private static ArrayList<ArrayList<Double>> test, train;
-    private static double error = 0.0000001;
-    private static double learningRate;
-    private static String pathToDataset;
-    private static ArrayList<Integer> layerData;
-
+    private static NeuralNetwork network;
 
     @SuppressWarnings({"unused", "serial"})
     public static void main(String[] args) {
         Parser parser;
-        NeuralNetwork network;
         Cli cli = new Cli();
 
-        //C:\Users\Vinnie\Projetos\NeuralNetwork\diagnosis.txt
-        pathToDataset = cli.askForDataset();
-        learningRate = cli.askForLearningRate();
-        layerData = cli.askForLayers();
-
-        int nOutputs = 4;
+        String pathToDataset = cli.askForDataset();
+        double learningRate = cli.askForLearningRate();
+        ArrayList<Integer> layerData = cli.askForLayers();
+        double desiredError = cli.askForDesiredError();
 
         try {
             parser = new Parser(pathToDataset, 35, 42);
@@ -45,32 +38,33 @@ public class Main {
         Collections.shuffle(inputs);
         encodeForNeuralNetwork(inputs, 80);
 
-        ArrayList<Integer> layers = new ArrayList<Integer>();
-        for (int i = 0; i < layerData.size(); i++){
-            layers.add(layerData.get(i));
+        ArrayList<Integer> layers = new ArrayList<>();
+        for (Integer aLayerData : layerData) {
+            layers.add(aLayerData);
         }
         network = new NeuralNetwork(layers, learningRate /*learning rate*/);
 
         int i = 1;
-        double networkError = 0.0;
-
+        double networkError;
         do {
             for (ArrayList<Double> inputLine : train.subList(0, 80)) {
-                network.feedForward(new ArrayList<Double>(inputLine.subList(0, 6)));
-                network.backPropagate(new ArrayList<Double>(inputLine.subList(6, inputLine.size())));
+                network.feedForward(new ArrayList<>(inputLine.subList(0, 6)));
+                network.backPropagate(new ArrayList<>(inputLine.subList(6, inputLine.size())));
             }
 
             networkError = network.getError();
             i++;
-        } while (networkError > 0.001);
+        } while (networkError > desiredError);
         System.out.println();
         System.out.println();
-        System.out.println("Treino terminado com FC= " + networkError + " após " + i + " iterações!");
+        System.out.println("Training completed with FC= " + networkError + " after " + i + " iterations!");
 
         double results = network.testNetwork(test);
         networkError = network.getError();
-        System.out.println("Teste terminado com FC= " + networkError + " e percentagem de successo = " + results *
+        System.out.println("Testing completed with FC= " + networkError + " and success ratio of = " + results *
                 100 + "%!");
+
+        cli.whatNow();
     }
 
     private static void exportToCSV(int numberOfTrainingRows, ArrayList<ArrayList<Double>> inputs,
@@ -144,11 +138,14 @@ public class Main {
     }
 
     public static void encodeForNeuralNetwork(ArrayList<ArrayList<Double>> inputs, int numberOfTrainingRows) {
-        test = new ArrayList<ArrayList<Double>>(inputs.size() - numberOfTrainingRows);
-        train = new ArrayList<ArrayList<Double>>(numberOfTrainingRows);
+        test = new ArrayList<>(inputs.size() - numberOfTrainingRows);
+        train = new ArrayList<>(numberOfTrainingRows);
 
-        ArrayList<Double> currentLine = new ArrayList<Double>(inputs.get(0).size());
-        boolean writtingTest = false;
+        ArrayList<Double> currentLine = new ArrayList<>(inputs.get(0).size());
+        boolean writingTest;
+
+        writingTest = numberOfTrainingRows == 0;
+
         int i = 0;
 
         for (ArrayList<Double> line : inputs) {
@@ -179,13 +176,21 @@ public class Main {
                 currentLine.add(1.0);
             }
 
-            if (writtingTest) test.add(currentLine);
+            if (writingTest) test.add(currentLine);
             else train.add(currentLine);
 
-            if (++i >= numberOfTrainingRows) writtingTest = true;
+            if (++i >= numberOfTrainingRows) writingTest = true;
 
-            currentLine = new ArrayList<Double>(inputs.get(0).size());
+            currentLine = new ArrayList<>(inputs.get(0).size());
         }
 
+    }
+
+    public static NeuralNetwork getNetwork() {
+        return network;
+    }
+
+    public static ArrayList<ArrayList<Double>> getTest() {
+        return test;
     }
 }

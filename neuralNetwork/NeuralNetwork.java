@@ -4,17 +4,17 @@ import java.util.ArrayList;
 
 public class NeuralNetwork {
 
-    private ArrayList<ArrayList<Neuron>> layers;
-    private ArrayList<Double> squaredErrors = new ArrayList<Double>();
+    private final ArrayList<ArrayList<Neuron>> layers;
+    private final ArrayList<Double> squaredErrors = new ArrayList<>();
     private int exampleCount = 0;
     private double learningRate = 0.2;
-    private Neuron bias = new Neuron();
+    private final Neuron bias = new Neuron();
 
     public NeuralNetwork(ArrayList<Integer> layerNumbers, double newLearningRate) {
         learningRate = newLearningRate;
         bias.setOutput(1.0);
 
-        layers = new ArrayList<ArrayList<Neuron>>(layerNumbers.size());
+        layers = new ArrayList<>(layerNumbers.size());
 
         for (int i = 0; i < layerNumbers.size(); i++) {
             initializeLayer(layerNumbers.get(i), i);
@@ -51,8 +51,8 @@ public class NeuralNetwork {
         double failedResults = 0.0;
         double correctResults = 0.0;
         for (ArrayList<Double> inputLine : test) {
-            if (testingFeedForward(new ArrayList<Double>(inputLine.subList(0, 6)),
-                    new ArrayList<Double>(inputLine.subList(6, inputLine.size())))) {
+            if (testingFeedForward(new ArrayList<>(inputLine.subList(0, 6)),
+                    new ArrayList<>(inputLine.subList(6, inputLine.size())))) {
                 correctResults++;
             } else {
                 failedResults++;
@@ -62,7 +62,7 @@ public class NeuralNetwork {
         return Math.abs(correctResults - failedResults) / (correctResults + failedResults);
     }
 
-    public boolean testingFeedForward(ArrayList<Double> input, ArrayList<Double> output) {
+    boolean testingFeedForward(ArrayList<Double> input, ArrayList<Double> output) {
         if (input.size() != layers.get(0).size()) throw new RuntimeException("Invalid Input Size");
 
         initializeInputLayer(input);
@@ -83,7 +83,7 @@ public class NeuralNetwork {
     }
 
     private void initializeLayer(int layerSize, int index) {
-        ArrayList<Neuron> layer = new ArrayList<Neuron>(layerSize);
+        ArrayList<Neuron> layer = new ArrayList<>(layerSize);
 
         for (int i = 0; i < layerSize; i++) {
             layer.add(new Neuron());
@@ -107,15 +107,16 @@ public class NeuralNetwork {
 
 
     public String toString() {
-        return "Input Neuron ==>> Hidden Neuron\n" + hiddenLayersToString() + "Hidden Neuron ==>> Output Neuron\n" +
+        return "Input Neuron == Weight >> Hidden Neuron\n" + hiddenLayersToString() + "Hidden Neuron == Weight >> " +
+                "Output Neuron\n" +
                 layerToString(layers.get(layers.size() - 1));
     }
 
     private String hiddenLayersToString() {
         StringBuilder result = new StringBuilder();
 
-        for (int i = 0; i < layers.size() - 1; i++) {
-            result.append("Layer " + i + "\n");
+        for (int i = 1; i < layers.size() - 1; i++) {
+            result.append("Layer ").append(i).append("\n");
             result.append(layerToString(layers.get(i))).append("\n");
         }
 
@@ -143,8 +144,8 @@ public class NeuralNetwork {
         }
     }
 
-    public ArrayList<Double> getOutput() {
-        ArrayList<Double> result = new ArrayList<Double>();
+    ArrayList<Double> getOutput() {
+        ArrayList<Double> result = new ArrayList<>();
 
         for (Neuron neuron : layers.get(layers.size() - 1))
             result.add(neuron.getOutput());
@@ -154,8 +155,7 @@ public class NeuralNetwork {
 
     public double getError() {
         double sum = 0;
-        for (int i = 0; i < squaredErrors.size(); i++)
-            sum += squaredErrors.get(i);
+        for (Double squaredError : squaredErrors) sum += squaredError;
 
         sum /= 2 * exampleCount;
         exampleCount = 0;
@@ -176,6 +176,23 @@ public class NeuralNetwork {
         for (int i = 1; i < output.size(); i++)
             if (output.get(i) > output.get(biggest)) biggest = i;
         return biggest;
+    }
+
+    public ArrayList<ArrayList<Neuron>> getLayers() {
+        return layers;
+    }
+
+    public Integer processUserInput(String userInputForTest) {
+        Parser parser = new Parser(35, 42);
+
+        ArrayList<ArrayList<Double>> encodableInput = new ArrayList<>();
+        encodableInput.add(parser.parseLine(userInputForTest));
+
+        Main.encodeForNeuralNetwork(encodableInput, 0);
+
+        feedForward(new ArrayList<>(Main.getTest().get(0).subList(0, 6)));
+        ArrayList<Double> result = getOutput();
+        return biggestNumber(result);
     }
 }
 

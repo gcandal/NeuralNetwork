@@ -8,13 +8,21 @@ import java.util.ArrayList;
 
 import javax.management.RuntimeErrorException;
 
-public class Parser {
+class Parser {
 	private BufferedReader file;
 	private int lowerBound = 0, upperBound = 0;
 
-	public Parser(String filename) throws FileNotFoundException {
-		file = new BufferedReader(new FileReader(filename));
-	}
+    public Parser(String filename) throws FileNotFoundException {
+        file = new BufferedReader(new FileReader(filename));
+    }
+
+    public Parser(int newLowerBound, int newUpperBound) {
+        if(newUpperBound < newLowerBound)
+            throw new RuntimeErrorException(null, "Lower bound must be less than the upper bound");
+
+        lowerBound = newLowerBound;
+        upperBound = newUpperBound;
+    }
 	
 	public Parser(String filename, int newLowerBound, int newUpperBound) throws FileNotFoundException {
 		file = new BufferedReader(new FileReader(filename));
@@ -27,7 +35,7 @@ public class Parser {
 	}
 
 	public ArrayList<ArrayList<Double>> parseFile() throws IOException {
-		ArrayList<ArrayList<Double>> result = new ArrayList<ArrayList<Double>>();
+		ArrayList<ArrayList<Double>> result = new ArrayList<>();
 		String line;
 
 		while (true) {
@@ -40,8 +48,8 @@ public class Parser {
 		}
 	}
 
-	private ArrayList<Double> parseLine(String line) {
-		ArrayList<Double> result = new ArrayList<Double>();
+	public ArrayList<Double> parseLine(String line) {
+		ArrayList<Double> result = new ArrayList<>();
 
 		for (String word : line.split("\t"))
 			try {

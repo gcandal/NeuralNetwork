@@ -2,13 +2,11 @@ package neuralNetwork;
 
 import java.util.Random;
 
-public class Synapse {
+class Synapse {
     private static final Random random = new Random();
     private static int count = 0;
     private final int id;
     private double weight = 0;
-    double prevDeltaWeight = 0;
-    double deltaWeight = 0;
     private final Neuron from, to;
 
     public Synapse(Neuron in, Neuron out) {
@@ -19,17 +17,7 @@ public class Synapse {
         resetWeight();
     }
 
-
-    public void setDeltaWeight(double weight) {
-        prevDeltaWeight = deltaWeight;
-        deltaWeight = weight;
-    }
-
-    public double getPrevDeltaWeight() {
-        return prevDeltaWeight;
-    }
-
-    public void resetWeight() {
+    void resetWeight() {
         int randomWeightLimit = 1;
         weight = random.nextDouble() * 2 * randomWeightLimit - randomWeightLimit;
     }
